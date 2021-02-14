@@ -9,6 +9,7 @@ import {
   Guard,
 } from '@typeit/discord';
 import { NotBot } from './NotABot';
+import { Html2Image } from './lib/Html2Image';
 
 const log = require('./lib/Logging').Logging.logger
 
@@ -21,8 +22,18 @@ export abstract class AllInOne {
     command.reply('pong!');
   }
 
-  @Command('hellothere')
-  hello(command: CommandMessage): void {
+  @Command('portfolio')
+  portfolio(command: CommandMessage): void {
+    command.author.send('General Kenobi!');
+  }
+
+  @Command('buy')
+  buy(command: CommandMessage): void {
+    command.author.send('General Kenobi!');
+  }
+
+  @Command('sell')
+  sell(command: CommandMessage): void {
     command.author.send('General Kenobi!');
   }
 
@@ -35,8 +46,16 @@ export abstract class AllInOne {
   }
 
   @On('message')
-  recievedMessage([message]: ArgsOf<'message'>): void {
+  @Guard(NotBot)
+  async recievedMessage([message]: ArgsOf<'message'>): Promise<void> {
     console.log('Got message', message.content);
+    
+    // Check for ticker in message
+    const tickerMatch = message.content.match(/(\$[a-zA-Z.]+)/)
+    if (tickerMatch?.length > 0) {
+      await Html2Image(message, 'elon');
+    }
+    
   }
 
   @On('messageDelete')
