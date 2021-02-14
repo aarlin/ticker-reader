@@ -1,6 +1,6 @@
-import 'reflect-metadata';
 import { Client } from '@typeit/discord';
 require('dotenv').config();
+import { Logging } from './lib/Logging';
 
 export class Main {
     static start() {

@@ -26,7 +26,7 @@ out/
 **/jest-coverage
 **/reports
 
-# misc
+# misc  
 .DS_Store
 .env
 .env.local
