@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { Client } from '@typeit/discord';
+require('dotenv').config();
 
 export class Main {
     static start() {
@@ -8,7 +9,6 @@ export class Main {
             silent: false,
             variablesChar: ':',
         });
-        require('dotenv').config();
         client.login(process.env.DISCORD_TOKEN);
     }
 }

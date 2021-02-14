@@ -28,7 +28,6 @@ jobs:
     - run: sudo apt-get update
     - run: sudo apt-get install build-essential libssl-dev libkrb5-dev libc++-dev
     - run: npm install
-    - run: yarn build
-    - run: tsc  # Apparently TSC failing doesn't cause yarn build to fail too...
+    - run: npm run tsc # Apparently TSC failing doesn't cause yarn build to fail too...
       env:
         CI: true
