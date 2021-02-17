@@ -30,17 +30,20 @@ export abstract class AllInOne {
   async portfolio(command: CommandMessage): Promise<void> {
     let portfolio = await keyv.get(command.author.id);  
 
-    command.channel.send(portfolio ? portfolio : 'You have no stocks in your portfolio');
+    if (portfolio) {
+      console.log(portfolio);
+      command.channel.send(portfolio);
+    } else {
+      command.channel.send('You have no stocks in your portfolio');
+    }
   }
 
   @Command('buy')
   async buy(command: CommandMessage): Promise<void> {
     console.log(command.content.split(' ')[1]);
-    let ticker = command.content.split(' ')[1];
+    let boughtTicker = command.content.split(' ')[1];
     let portfolio = await keyv.get(command.author.id);
-    await keyv.set(command.author.id, { ...portfolio, ticker })
-
-    // command.author.send('General Kenobi!');
+    await keyv.set(command.author.id, { ...portfolio, boughtTicker })
   }
 
   @Command('sell')
@@ -48,9 +51,14 @@ export abstract class AllInOne {
     let portfolio = await keyv.get(command.author.id);  
 
     await keyv.set(command.author.id, portfolio);
-
-    // command.author.send('General Kenobi!');
   }
+
+  @Command('logs')
+  async printLogs(command: CommandMessage): Promise<void> {
+    let deletedMessages = await keyv.get('deletedMessages');
+    command.author.send(JSON.stringify(deletedMessages, null, 2));
+  }
+
 
   @On('ready')
   async onReady(args: string[], bot: Record<string, any>, client: Client): Promise<void> {
@@ -63,7 +71,7 @@ export abstract class AllInOne {
   @On('message')
   @Guard(NotBot)
   async receivedMessage([message]: ArgsOf<'message'>): Promise<void> {
-    console.log('Got message', message.content);
+    console.log(message.author.username, ':' , message.content);
     
     // Check for ticker in message
     // const tickerMatch = message.content.match(/(\$[a-zA-Z.]+)/)
@@ -74,7 +82,9 @@ export abstract class AllInOne {
   }
 
   @On('messageDelete')
-  messageDeleted([message]: ArgsOf<'messageDelete'>): void {
+  async messageDeleted([message]: ArgsOf<'messageDelete'>): Promise<void> {
+    let messageLogs = await keyv.get('deletedMessages') || [];
+    await keyv.set('deletedMessages', [...messageLogs, message.content]);
     console.log(`${message.id}:${message.content} was deleted.`);
   }
 
