@@ -9,7 +9,6 @@
     "build": "tsc",
     "prod": "node build/Main.js"
   },
-  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aarlin/ticker-reader.git"
@@ -25,6 +24,7 @@
     "@typeit/discord": "^4.0.9",
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
+    "keyv": "^4.0.3",
     "moment": "^2.29.1",
     "node-html-to-image": "^3.1.0",
     "svg-png-converter": "0.0.9",

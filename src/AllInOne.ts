@@ -10,6 +10,10 @@ import {
 } from '@typeit/discord';
 import { NotBot } from './NotABot';
 import { Html2Image } from './lib/Html2Image';
+import Keyv from 'keyv';
+
+const keyv = new Keyv(); // for in-memory storage
+keyv.on('error', err => console.error('Keyv connection error:', err));
 
 const log = require('./lib/Logging').Logging.logger
 
@@ -23,18 +27,29 @@ export abstract class AllInOne {
   }
 
   @Command('portfolio')
-  portfolio(command: CommandMessage): void {
-    command.author.send('General Kenobi!');
+  async portfolio(command: CommandMessage): Promise<void> {
+    let portfolio = await keyv.get(command.author.id);  
+
+    command.channel.send(portfolio ? portfolio : 'You have no stocks in your portfolio');
   }
 
   @Command('buy')
-  buy(command: CommandMessage): void {
-    command.author.send('General Kenobi!');
+  async buy(command: CommandMessage): Promise<void> {
+    console.log(command.content.split(' ')[1]);
+    let ticker = command.content.split(' ')[1];
+    let portfolio = await keyv.get(command.author.id);
+    await keyv.set(command.author.id, { ...portfolio, ticker })
+
+    // command.author.send('General Kenobi!');
   }
 
   @Command('sell')
-  sell(command: CommandMessage): void {
-    command.author.send('General Kenobi!');
+  async sell(command: CommandMessage): Promise<void> {
+    let portfolio = await keyv.get(command.author.id);  
+
+    await keyv.set(command.author.id, portfolio);
+
+    // command.author.send('General Kenobi!');
   }
 
   @On('ready')
@@ -47,14 +62,14 @@ export abstract class AllInOne {
 
   @On('message')
   @Guard(NotBot)
-  async recievedMessage([message]: ArgsOf<'message'>): Promise<void> {
+  async receivedMessage([message]: ArgsOf<'message'>): Promise<void> {
     console.log('Got message', message.content);
     
     // Check for ticker in message
-    const tickerMatch = message.content.match(/(\$[a-zA-Z.]+)/)
-    if (tickerMatch?.length > 0) {
-      await Html2Image(message, 'elon');
-    }
+    // const tickerMatch = message.content.match(/(\$[a-zA-Z.]+)/)
+    // if (tickerMatch?.length > 0) {
+    //   await Html2Image(message, 'elon');
+    // }
     
   }
 
